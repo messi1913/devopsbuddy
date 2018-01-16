@@ -10,6 +10,7 @@ import com.devopsbuddy.enums.PlansEnum;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -27,6 +28,10 @@ public class UserService {
     @Autowired
     private UserRepository userRepository;
 
+    @Autowired
+    private BCryptPasswordEncoder passwordEncoder;
+
+
     /** The application logger */
     private static final Logger LOG = LoggerFactory.getLogger(UserService.class);
 
@@ -40,8 +45,8 @@ public class UserService {
 //                    user.getUsername(), user.getEmail());
 //        } else {
 
-//            String encryptedPassword = passwordEncoder.encode(user.getPassword());
-//            user.setPassword(encryptedPassword);
+            String encryptedPassword = passwordEncoder.encode(user.getPassword());
+            user.setPassword(encryptedPassword);
 
             Plan plan = new Plan(plansEnum);
             // It makes sure the plans exist in the database

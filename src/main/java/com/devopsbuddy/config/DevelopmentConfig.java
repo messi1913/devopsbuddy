@@ -3,6 +3,7 @@ package com.devopsbuddy.config;
 import com.devopsbuddy.backend.service.EmailService;
 import com.devopsbuddy.backend.service.MockEmailService;
 import org.apache.catalina.servlets.WebdavServlet;
+import org.h2.server.web.WebServlet;
 import org.springframework.boot.web.servlet.ServletRegistrationBean;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -25,7 +26,7 @@ public class DevelopmentConfig {
 
     @Bean
     public ServletRegistrationBean h2ConsoleServletRegistration() {
-        ServletRegistrationBean bean = new ServletRegistrationBean(new WebdavServlet());
+        ServletRegistrationBean bean = new ServletRegistrationBean(new WebServlet());
         bean.addUrlMappings("/console/*");
         return bean;
     }
