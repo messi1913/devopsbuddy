@@ -13,10 +13,13 @@ import com.devopsbuddy.enums.RolesEnum;
 import com.devopsbuddy.utils.UserUtils;
 import org.junit.Assert;
 import org.junit.Before;
+import org.junit.Rule;
 import org.junit.Test;
+import org.junit.rules.TestName;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.test.annotation.Rollback;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
 import java.util.HashSet;
@@ -35,6 +38,8 @@ public class RepositoriesIntegrationTest {
     @Autowired
     private UserRepository userRepository;
 
+    @Rule
+    public TestName testName = new TestName();
 
 
     @Before
@@ -86,7 +91,10 @@ public class RepositoriesIntegrationTest {
             Assert.assertNotNull(ur.getRole().getId());
         }*/
 
-        User basicUser = createUser();
+        String username =  testName.getMethodName();
+        String email = testName.getMethodName() + "sangmin.com";
+
+        User basicUser = createUser(username, email);
 
         User newlyCreatedUser = userRepository.findOne(basicUser.getId());
         Assert.assertNotNull(newlyCreatedUser);
@@ -104,7 +112,9 @@ public class RepositoriesIntegrationTest {
 
     @Test
     public void testDeleteUser() throws Exception {
-        User basicUser = createUser();
+        String username =  testName.getMethodName();
+        String email = testName.getMethodName() + "sangmin.com";
+        User basicUser = createUser(username, email);
         userRepository.delete(basicUser.getId());
     }
 
@@ -121,28 +131,11 @@ public class RepositoriesIntegrationTest {
         return new Role(rolesEnum);
     }
 
-    private User createBasicUser() throws Exception {
-        User user = new User();
-        user.setUsername("basicUser");
-        user.setPassword("secret");
-        user.setEmail("me@example.com");
-        user.setFirstName("FirstName");
-        user.setLastName("LastName");
-        user.setPhoneNumber("01099891913");
-        user.setCountry("KR");
-        user.setEnabled(true);
-        user.setDescription("A Basic USer");
-        user.setProfileImageUrl("https://");
-
-        return user;
-
-    }
-
-    private User createUser() {
+    private User createUser(String userName, String email) {
         Plan plan = createBasicPlan();
         planRepository.save(plan);
 
-        User basicUser = UserUtils.createBasicUser("sangmin", "test");
+        User basicUser = UserUtils.createBasicUser(userName, email);
         basicUser.setPlan(plan);
 
         Set<UserRole> userRoles = new HashSet<>();
