@@ -8,6 +8,7 @@ import com.devopsbuddy.backend.persistence.domain.backend.UserRole;
 import com.devopsbuddy.backend.persistence.repositories.PlanRepository;
 import com.devopsbuddy.backend.persistence.repositories.RoleRepository;
 import com.devopsbuddy.backend.persistence.repositories.UserRepository;
+import com.devopsbuddy.enums.PlansEnum;
 import com.devopsbuddy.enums.RolesEnum;
 import org.junit.Assert;
 import org.junit.Before;
@@ -33,8 +34,6 @@ public class RepositoriesIntegrationTest {
     @Autowired
     private UserRepository userRepository;
 
-    private static final int BASIC_PLAN_ID = 1;
-    private static final int BASIC_ROLE_ID = 1;
 
 
     @Before
@@ -63,9 +62,7 @@ public class RepositoriesIntegrationTest {
 
         Role basicRole = createRole(RolesEnum.BASIC);
         Set<UserRole> userRoles = new HashSet<>();
-        UserRole userRole = new UserRole();
-        userRole.setUser(basicUser);
-        userRole.setRole(basicRole);
+        UserRole userRole = new UserRole(basicUser, basicRole);
         userRoles.add(userRole);
 
         basicUser.getUserRoles().addAll(userRoles);
@@ -91,6 +88,14 @@ public class RepositoriesIntegrationTest {
 
     }
 
+    @Test
+    public void testCreateNewPlant() throws Exception {
+
+        Plan basicPlan = createBasicPlan();
+        planRepository.save(basicPlan);
+        Plan retrievedPlan = planRepository.findOne(PlansEnum.BASIC.getId());
+        Assert.assertNotNull(retrievedPlan);
+    }
 
     private Role createRole(RolesEnum rolesEnum) {
         return new Role(rolesEnum);
@@ -115,18 +120,11 @@ public class RepositoriesIntegrationTest {
 
     }
 
-    @Test
-    public void testCreateNewPlant() throws Exception {
 
-        Plan basicPlan = createBasicPlan();
-        planRepository.save(basicPlan);
-        Plan retrievedPlan = planRepository.findOne(BASIC_PLAN_ID);
-        Assert.assertNotNull(retrievedPlan);
-    }
 
     private Plan createBasicPlan() {
         Plan plan = new Plan();
-        plan.setId(BASIC_PLAN_ID);
+        plan.setId(PlansEnum.BASIC.getId());
         plan.setName("plan");
         return plan;
     }
