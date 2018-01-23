@@ -38,12 +38,12 @@ public class UserService {
     @Transactional
     public User createUser(User user, PlansEnum plansEnum, Set<UserRole> userRoles) {
 
-//        User localUser = userRepository.findByEmail(user.getEmail());
-//
-//        if (localUser != null) {
-//            LOG.info("User with username {} and email {} already exist. Nothing will be done. ",
-//                    user.getUsername(), user.getEmail());
-//        } else {
+        User localUser = userRepository.findByEmail(user.getEmail());
+
+        if (localUser != null) {
+            LOG.info("User with username {} and email {} already exist. Nothing will be done. ",
+                    user.getUsername(), user.getEmail());
+        } else {
 
             String encryptedPassword = passwordEncoder.encode(user.getPassword());
             user.setPassword(encryptedPassword);
@@ -64,10 +64,28 @@ public class UserService {
 
             user = userRepository.save(user);
 
-//        }
+        }
 
         return user;
 
+    }
+
+    /**
+     * Returns a user by username or null if a user could not be found.
+     * @param username The username to be found
+     * @return A user by username or null if a user could not be found.
+     */
+    public User findByUserName(String username) {
+        return userRepository.findByUsername(username);
+    }
+
+    /**
+     * Returns a user for the given email or null if a user could not be found.
+     * @param email The email associated to the user to find.
+     * @return a user for the given email or null if a user could not be found.
+     */
+    public User findByEmail(String email) {
+        return userRepository.findByEmail(email);
     }
 
     @Transactional
