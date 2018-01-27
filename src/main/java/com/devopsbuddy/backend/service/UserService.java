@@ -1,8 +1,10 @@
 package com.devopsbuddy.backend.service;
 
+import com.devopsbuddy.backend.persistence.domain.backend.PasswordResetToken;
 import com.devopsbuddy.backend.persistence.domain.backend.Plan;
 import com.devopsbuddy.backend.persistence.domain.backend.User;
 import com.devopsbuddy.backend.persistence.domain.backend.UserRole;
+import com.devopsbuddy.backend.persistence.repositories.PasswordResetTokenRepository;
 import com.devopsbuddy.backend.persistence.repositories.PlanRepository;
 import com.devopsbuddy.backend.persistence.repositories.RoleRepository;
 import com.devopsbuddy.backend.persistence.repositories.UserRepository;
@@ -30,6 +32,9 @@ public class UserService {
 
     @Autowired
     private BCryptPasswordEncoder passwordEncoder;
+
+    @Autowired
+    private PasswordResetTokenRepository passwordResetTokenRepository;
 
 
     /** The application logger */
@@ -62,11 +67,11 @@ public class UserService {
 
             user.getUserRoles().addAll(userRoles);
 
-            user = userRepository.save(user);
+            localUser = userRepository.save(user);
 
         }
 
-        return user;
+        return localUser;
 
     }
 
@@ -93,6 +98,11 @@ public class UserService {
         password = passwordEncoder.encode(password);
         userRepository.updateUserPassword(userId, password);
         LOG.debug("Password updated successfully for user id {}" , userId);
+
+        Set<PasswordResetToken> resetTokens = passwordResetTokenRepository.findAllByUserId(userId);
+        if (!resetTokens.isEmpty()) {
+            passwordResetTokenRepository.delete(resetTokens);
+        }
     }
 
 }
